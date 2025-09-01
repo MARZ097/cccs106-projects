@@ -69,9 +69,9 @@
 ---
 
 ## Screenshots
-- [screenshots/with-commit-history.png] GitHub repository with commit history  
-- [screenshots/hello-gui.png] hello_flet.py running with greeting  
-- [screenshots/personal-info.png] personal_info_gui.py with filled form and generated profile  
+![GitHub repository with commit history](screenshots/with-commit-history.png) 
+![hello_flet.py running with greeting](screenshots/hello-gui.png)  
+![personal_info_gui.py with filled form and generated profile](screenshots/personal-info.png)
 
 ---
 
