@@ -3,4 +3,4 @@ __pycache__/ > .gitignore
 .vscode/ >> .gitignore
 *.log >> .gitignore
 .env >> .gitignore
-ccs106_env_lastname >> .gitignore
+ccs106_env_villaruel >> .gitignore
