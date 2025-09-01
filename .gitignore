@@ -1,0 +1,6 @@
+__pycache__/ > .gitignore
+*.pyc >> .gitignore
+.vscode/ >> .gitignore
+*.log >> .gitignore
+.env >> .gitignore
+ccs106_env_lastname >> .gitignore
