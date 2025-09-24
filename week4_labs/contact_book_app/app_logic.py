@@ -52,7 +52,7 @@ def display_contacts(page, contacts_list_view, db_conn, search_term='', category
         )
         contacts_list_view.controls.append(empty_state)
     else:
-    for contact in contacts:
+        for contact in contacts:
             contact_id, name, phone, email, address, category, notes, favorite = contact
             
             # Category icons and colors
@@ -207,7 +207,7 @@ def add_contact(page, inputs, contacts_list_view, db_conn, update_count_callback
     # Clear form
     for field in inputs:
         if hasattr(field, 'value'):
-        field.value = ""
+            field.value = ""
     category_input.value = "Other"
     
     # Refresh display
@@ -225,7 +225,7 @@ def toggle_favorite(page, contact_id, db_conn, contacts_list_view, search_term='
 def confirm_delete_contact(page, contact_id, contact_name, db_conn, contacts_list_view, search_term='', category_filter='All', update_count_callback=None):
     """Show confirmation dialog before deleting contact"""
     def delete_confirmed(e):
-    delete_contact_db(db_conn, contact_id)
+        delete_contact_db(db_conn, contact_id)
         display_contacts(page, contacts_list_view, db_conn, search_term, category_filter, update_count_callback)
         dialog.open = False
         page.update()
