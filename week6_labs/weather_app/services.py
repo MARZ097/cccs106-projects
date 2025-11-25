@@ -7,7 +7,11 @@ from typing import Final
 import httpx
 from dotenv import load_dotenv
 
-from .models import AirQualityData, WeatherData
+try:
+    from .models import AirQualityData, WeatherData
+except ImportError:
+    # Allow running as a script directly
+    from models import AirQualityData, WeatherData
 
 load_dotenv()
 

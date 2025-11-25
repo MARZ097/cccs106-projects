@@ -84,9 +84,16 @@ Or manually:
 ```bash
 cd week6_labs
 venv\Scripts\activate
-python weather_app/main.py
-# or with Flet CLI:
-python -m flet run --port 8550 weather_app/main.py
+cd weather_app
+python main.py
+```
+
+**Note:** When running manually, make sure to `cd` into the `weather_app` directory first, or use the module approach:
+
+```bash
+cd week6_labs
+venv\Scripts\activate
+python -m weather_app.main
 ```
 
 Flet opens a desktop window by default. Use `--web` if you prefer running it in the browser.

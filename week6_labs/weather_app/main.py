@@ -7,8 +7,13 @@ from pathlib import Path
 
 import flet as ft
 
-from .models import AirQualityData, WeatherData
-from .services import WeatherService, WeatherServiceError
+try:
+    from .models import AirQualityData, WeatherData
+    from .services import WeatherService, WeatherServiceError
+except ImportError:
+    # Allow running as a script directly
+    from models import AirQualityData, WeatherData
+    from services import WeatherService, WeatherServiceError
 
 
 class WeatherApp:
@@ -35,11 +40,11 @@ class WeatherApp:
         page = self.page
         page.title = "Module 6 Weather Application"
         page.padding = 20
-        page.bgcolor = ft.colors.BLUE_GREY_50
+        page.bgcolor = ft.Colors.BLUE_GREY_50
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         page.scroll = ft.ScrollMode.AUTO
 
-        self.status_text = ft.Text("", color=ft.colors.RED_400)
+        self.status_text = ft.Text("", color=ft.Colors.RED_400)
         self.city_field = ft.TextField(
             label="Enter city",
             hint_text="e.g., Manila, Tokyo, Paris",
@@ -48,11 +53,11 @@ class WeatherApp:
             expand=True,
         )
         self.search_button = ft.FilledButton(
-            text="Search", icon=ft.icons.SEARCH, on_click=self._handle_search
+            text="Search", icon=ft.Icons.SEARCH, on_click=self._handle_search
         )
         self.add_watch_button = ft.OutlinedButton(
             text="Add to comparison",
-            icon=ft.icons.LIST,
+            icon=ft.Icons.LIST,
             disabled=True,
             on_click=self._handle_add_watchlist,
         )
@@ -65,7 +70,13 @@ class WeatherApp:
         self.sunset_text = ft.Text()
         self.countdown_text = ft.Text(weight=ft.FontWeight.BOLD)
 
-        self.air_chip = ft.Chip(label="AQI", bgcolor=ft.colors.BLUE_GREY_100)
+        self.air_chip_label = ft.Text("AQI", weight=ft.FontWeight.BOLD)
+        self.air_chip_container = ft.Container(
+            content=self.air_chip_label,
+            padding=ft.padding.symmetric(horizontal=12, vertical=6),
+            bgcolor=ft.Colors.BLUE_GREY_100,
+            border_radius=16,
+        )
         self.air_details = ft.Column(spacing=2)
 
         self.watchlist_column = ft.Column(spacing=10, expand=True)
@@ -90,7 +101,7 @@ class WeatherApp:
                                         self.add_watch_button,
                                         ft.TextButton(
                                             "Toggle °C / °F",
-                                            icon=ft.icons.SYNC_ALT,
+                                            icon=ft.Icons.SYNC_ALT,
                                             on_click=self._handle_unit_toggle,
                                         ),
                                     ],
@@ -108,12 +119,12 @@ class WeatherApp:
                         ft.Text("Multiple Cities Comparison", size=20, weight=ft.FontWeight.BOLD),
                         ft.Text(
                             "Keep a watchlist of other locations and compare them side by side.",
-                            color=ft.colors.BLUE_GREY_600,
+                            color=ft.Colors.BLUE_GREY_600,
                         ),
                         ft.Container(
                             content=self.watchlist_column,
                             padding=10,
-                            bgcolor=ft.colors.WHITE,
+                            bgcolor=ft.Colors.WHITE,
                             border_radius=10,
                             ink=False,
                         ),
@@ -183,7 +194,7 @@ class WeatherApp:
                         ft.Row(
                             [
                                 ft.Text("Air Quality", size=20, weight=ft.FontWeight.BOLD),
-                                self.air_chip,
+                                self.air_chip_container,
                             ],
                             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                         ),
@@ -292,15 +303,16 @@ class WeatherApp:
 
     def _update_air_quality(self) -> None:
         if not self.current_air:
-            self.air_chip.label = "AQI — unavailable"
+            self.air_chip_label.value = "AQI — unavailable"
+            self.air_chip_container.bgcolor = ft.Colors.BLUE_GREY_100
             self.air_details.controls = []
             self.page.update()
             return
 
         air = self.current_air
         label, color = self._aqi_label_color(air.aqi)
-        self.air_chip.label = f"AQI {air.aqi} · {label}"
-        self.air_chip.bgcolor = color
+        self.air_chip_label.value = f"AQI {air.aqi} · {label}"
+        self.air_chip_container.bgcolor = color
 
         self.air_details.controls = [
             ft.Text("Fine particulates (PM2.5): {:.1f} µg/m³".format(air.pm2_5)),
@@ -326,7 +338,7 @@ class WeatherApp:
                                     weight=ft.FontWeight.BOLD,
                                 ),
                                 ft.IconButton(
-                                    icon=ft.icons.DELETE,
+                                    icon=ft.Icons.DELETE,
                                     tooltip="Remove city",
                                     on_click=lambda e, city=weather.city: self._handle_remove_city(
                                         city
@@ -362,7 +374,7 @@ class WeatherApp:
     # ------------------------------------------------------------------ Misc helpers
     def _show_status(self, message: str, success: bool = False) -> None:
         self.status_text.value = message
-        self.status_text.color = ft.colors.GREEN_600 if success else ft.colors.RED_400
+        self.status_text.color = ft.Colors.GREEN_600 if success else ft.Colors.RED_400
         self.page.update()
 
     def _set_loading(self, is_loading: bool) -> None:
@@ -414,13 +426,13 @@ class WeatherApp:
 
     def _aqi_label_color(self, aqi: int) -> tuple[str, str]:
         scale = {
-            1: ("Good", ft.colors.GREEN_200),
-            2: ("Fair", ft.colors.LIGHT_GREEN_300),
-            3: ("Moderate", ft.colors.AMBER_200),
-            4: ("Poor", ft.colors.ORANGE_200),
-            5: ("Very Poor", ft.colors.RED_200),
+            1: ("Good", ft.Colors.GREEN_200),
+            2: ("Fair", ft.Colors.LIGHT_GREEN_300),
+            3: ("Moderate", ft.Colors.AMBER_200),
+            4: ("Poor", ft.Colors.ORANGE_200),
+            5: ("Very Poor", ft.Colors.RED_200),
         }
-        return scale.get(aqi, ("Unknown", ft.colors.BLUE_GREY_100))
+        return scale.get(aqi, ("Unknown", ft.Colors.BLUE_GREY_100))
 
     def _load_watchlist(self) -> list[str]:
         if not self.watchlist_file.exists():

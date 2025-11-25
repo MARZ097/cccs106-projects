@@ -10,7 +10,11 @@ echo   2. Activated your virtual environment
 echo   3. Installed requirements: pip install -r requirements.txt
 echo.
 
-python weather_app/main.py
+cd /d %~dp0
+REM Change to weather_app directory to allow direct script execution
+cd weather_app
+python main.py
+cd ..
 
 pause
 
