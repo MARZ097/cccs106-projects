@@ -25,6 +25,8 @@ class WeatherService:
 
     WEATHER_URL: Final[str] = "https://api.openweathermap.org/data/2.5/weather"
     AIR_URL: Final[str] = "https://api.openweathermap.org/data/2.5/air_pollution"
+    FORECAST_URL: Final[str] = "https://api.openweathermap.org/data/2.5/forecast"
+    IPAPI_URL: Final[str] = "http://ip-api.com/json/"
 
     def __init__(self, api_key: str | None = None) -> None:
         self.api_key = api_key or os.getenv("OPENWEATHER_API_KEY")
@@ -55,6 +57,7 @@ class WeatherService:
             city=payload.get("name", city).strip(),
             country=sys_data.get("country", ""),
             temperature=payload["main"]["temp"],
+            feels_like=payload["main"]["feels_like"],
             description=payload["weather"][0]["description"].title(),
             humidity=payload["main"]["humidity"],
             wind_speed=payload["wind"]["speed"],
@@ -92,5 +95,48 @@ class WeatherService:
             pm2_5=components.get("pm2_5", 0.0),
             pm10=components.get("pm10", 0.0),
         )
+
+    async def fetch_hourly_forecast(self, lat: float, lon: float, units: str = "metric") -> list[dict]:
+        """Return hourly forecast for next 24 hours."""
+        params = {"lat": lat, "lon": lon, "appid": self.api_key, "units": units}
+
+        async with httpx.AsyncClient(timeout=httpx.Timeout(10.0)) as client:
+            try:
+                resp = await client.get(self.FORECAST_URL, params=params)
+                resp.raise_for_status()
+            except httpx.HTTPStatusError as exc:
+                message = exc.response.json().get("message", "Request failed")
+                raise WeatherServiceError(message.title()) from exc
+            except httpx.HTTPError as exc:
+                raise WeatherServiceError("Network error while fetching forecast") from exc
+
+        payload = resp.json()
+        hourly_data = []
+        
+        # OpenWeatherMap 5-day forecast returns data in 3-hour intervals
+        for item in payload["list"][:16]:  # Get next 48 hours (16 * 3 hours)
+            dt = datetime.fromtimestamp(item["dt"], tz=timezone.utc)
+            hourly_data.append({
+                "time": dt.strftime("%I %p"),  # e.g., "03 PM"
+                "temp": item["main"]["temp"],
+                "icon": item["weather"][0]["icon"],
+                "humidity": item["main"]["humidity"],
+                "description": item["weather"][0]["description"].title(),
+            })
+        
+        return hourly_data
+
+    async def get_current_location(self) -> str:
+        """Get current location city name using IP geolocation."""
+        async with httpx.AsyncClient(timeout=httpx.Timeout(10.0)) as client:
+            try:
+                resp = await client.get(self.IPAPI_URL)
+                resp.raise_for_status()
+                data = resp.json()
+                if data.get("status") == "success":
+                    return data.get("city", "")
+                raise WeatherServiceError("Unable to detect location")
+            except httpx.HTTPError as exc:
+                raise WeatherServiceError("Network error while detecting location") from exc
 
 
