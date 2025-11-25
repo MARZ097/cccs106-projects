@@ -141,6 +141,4 @@ Flet opens a desktop window by default. Use `--web` if you prefer running it in 
 - **Rate limit or connectivity issues**: Messages appear near the search bar; retry after a short wait.
 - **Stale watchlist**: Delete `weather_app/data/watchlist.json` if you need to reset the saved list.
 
-Happy coding!
-
 
