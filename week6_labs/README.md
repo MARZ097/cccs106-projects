@@ -103,7 +103,9 @@ Flet opens a desktop window by default. Use `--web` if you prefer running it in 
 - **Search Dashboard**
   - Enter a city name (supports `City`, `City, Country Code`, or coordinates).
   - Async fetching with graceful messages for invalid locations or network issues.
-  - Displays weather icon, temperature (°C/°F toggle), humidity, wind speed.
+  - Displays weather icon, temperature (metric units), humidity, wind speed, and "feels like" temperature.
+  - Current location detection using IP geolocation.
+  - Local time display for the searched city.
 - **Sunrise/Sunset Countdown**
   - Shows local sunrise and sunset times based on the provided timezone offset.
   - Countdown automatically switches between “Sunrise in…”, “Sunset in…”, and “Next sunrise in…”.
@@ -111,17 +113,27 @@ Flet opens a desktop window by default. Use `--web` if you prefer running it in 
   - Uses the retrieved latitude/longitude to call the Air Pollution API.
   - Provides AQI bucket, color-coded chip, and pollutant concentration details (PM2.5, PM10, O₃, NO₂, CO).
 - **Multiple Cities Comparison**
-  - “Add to comparison” button stores the current city inside a persistent JSON watchlist.
-  - Comparison cards display icon, temperature, humidity, and wind.
+  - "Add to comparison" button stores the current city inside a persistent JSON watchlist.
+  - Comparison cards display icon, temperature, humidity, wind, and local time.
   - Remove city via the delete icon; list refreshes automatically and survives restarts.
+- **Hourly Forecast**
+  - Displays next 36 hours of weather forecast in 3-hour intervals.
+  - Shows temperature, weather icon, and humidity for each time slot.
+  - Horizontal scrolling for easy navigation.
+- **Weather Recommendations**
+  - Smart recommendations based on current weather conditions.
+  - Temperature-based advice (stay hydrated, dress warmly, etc.).
+  - Condition-specific tips (umbrella for rain, indoor warnings for storms, etc.).
 
 ## Testing Checklist
 
 1. Search a valid city (e.g., `Manila`) and confirm base weather fields, sunrise/sunset countdown, and air quality.
-2. Toggle between °C/°F and re-check values.
-3. Add at least two cities to the comparison list and verify cards render.
-4. Close/reopen the app—watchlist should persist.
-5. Try an invalid city to see error handling.
+2. Click "My Location" button to detect your current location automatically.
+3. Verify hourly forecast displays correctly with temperature, humidity, and weather icons.
+4. Check that weather recommendations appear based on current conditions.
+5. Add at least two cities to the comparison list and verify cards render.
+6. Close/reopen the app—watchlist should persist.
+7. Try an invalid city to see error handling.
 
 ## Troubleshooting
 
