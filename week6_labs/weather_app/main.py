@@ -101,79 +101,120 @@ class WeatherApp:
         self.watchlist_column = ft.Column(spacing=12, expand=True)
         self.hourly_scroll = ft.Row(scroll=ft.ScrollMode.AUTO, spacing=10)
 
-        self.loading_overlay = ft.ProgressBar(width=page.width or 400, visible=False, color="#4299E1")
-
-        page.add(
-            ft.Container(
+        # Create centered loading spinner overlay
+        self.loading_overlay = ft.Container(
+            content=ft.Container(
                 content=ft.Column(
-                    controls=[
-                        # Header section with gradient
-                        ft.Container(
-                            content=ft.Column(
-                                [
-                                    ft.Text(
-                                        "Weather Dashboard",
-                                        size=28,
-                                        weight=ft.FontWeight.BOLD,
-                                        color="#FFFFFF",
-                                    ),
-                                    ft.Container(height=20),
-                                    ft.Row(
-                                        [self.city_field, self.search_button, self.location_button],
-                                        spacing=10,
-                                    ),
-                                    ft.Container(
-                                        content=self.status_text,
-                                        padding=ft.padding.only(top=5),
-                                    ),
-                                ],
-                                spacing=10,
-                            ),
-                            padding=30,
-                            gradient=ft.LinearGradient(
-                                begin=ft.alignment.top_left,
-                                end=ft.alignment.bottom_right,
-                                colors=["#4299E1", "#667EEA"],
-                            ),
-                        ),
-                        # Main content
-                        ft.Container(
-                            content=ft.Column(
-                                [
-                                    ft.Row(
-                                        [
-                                            self.add_watch_button,
-                                        ],
-                                        alignment=ft.MainAxisAlignment.END,
-                                        spacing=10,
-                                    ),
-                                    self._build_main_card(),
-                                    self._build_hourly_forecast_card(),
-                                    self._build_air_quality_card(),
-                                    ft.Container(height=10),
-                                    ft.Text(
-                                        "City Comparison",
-                                        size=22,
-                                        weight=ft.FontWeight.BOLD,
-                                        color="#2D3748",
-                                    ),
-                                    ft.Text(
-                                        "Compare weather across multiple cities",
-                                        size=14,
-                                        color="#718096",
-                                    ),
-                                    ft.Container(height=5),
-                                    self.watchlist_column,
-                                    self.loading_overlay,
-                                ],
-                                spacing=15,
-                            ),
-                            padding=ft.padding.symmetric(horizontal=30, vertical=20),
+                    [
+                        ft.ProgressRing(width=70, height=70, stroke_width=5, color="#FFFFFF"),
+                        ft.Container(height=20),
+                        ft.Text(
+                            "Loading weather data...", 
+                            size=18, 
+                            color="#FFFFFF", 
+                            weight=ft.FontWeight.W_600,
+                            text_align=ft.TextAlign.CENTER,
                         ),
                     ],
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    alignment=ft.MainAxisAlignment.CENTER,
                     spacing=0,
                 ),
-                width=1000,
+                padding=40,
+                bgcolor="#4299E1",
+                border_radius=20,
+                shadow=ft.BoxShadow(
+                    spread_radius=0,
+                    blur_radius=30,
+                    color="#00000040",
+                    offset=ft.Offset(0, 10),
+                ),
+            ),
+            alignment=ft.alignment.center,
+            bgcolor="#00000050",  # Dark semi-transparent overlay
+            visible=False,
+        )
+
+        # Main content container
+        self.main_content = ft.Container(
+            content=ft.Column(
+                controls=[
+                    # Header section with gradient
+                    ft.Container(
+                        content=ft.Column(
+                            [
+                                ft.Text(
+                                    "Weather Dashboard",
+                                    size=28,
+                                    weight=ft.FontWeight.BOLD,
+                                    color="#FFFFFF",
+                                ),
+                                ft.Container(height=20),
+                                ft.Row(
+                                    [self.city_field, self.search_button, self.location_button],
+                                    spacing=10,
+                                ),
+                                ft.Container(
+                                    content=self.status_text,
+                                    padding=ft.padding.only(top=5),
+                                ),
+                            ],
+                            spacing=10,
+                        ),
+                        padding=30,
+                        gradient=ft.LinearGradient(
+                            begin=ft.alignment.top_left,
+                            end=ft.alignment.bottom_right,
+                            colors=["#4299E1", "#667EEA"],
+                        ),
+                    ),
+                    # Main content
+                    ft.Container(
+                        content=ft.Column(
+                            [
+                                ft.Row(
+                                    [
+                                        self.add_watch_button,
+                                    ],
+                                    alignment=ft.MainAxisAlignment.END,
+                                    spacing=10,
+                                ),
+                                self._build_main_card(),
+                                self._build_hourly_forecast_card(),
+                                self._build_air_quality_card(),
+                                ft.Container(height=10),
+                                ft.Text(
+                                    "City Comparison",
+                                    size=22,
+                                    weight=ft.FontWeight.BOLD,
+                                    color="#2D3748",
+                                ),
+                                ft.Text(
+                                    "Compare weather across multiple cities",
+                                    size=14,
+                                    color="#718096",
+                                ),
+                                ft.Container(height=5),
+                                self.watchlist_column,
+                            ],
+                            spacing=15,
+                        ),
+                        padding=ft.padding.symmetric(horizontal=30, vertical=20),
+                    ),
+                ],
+                spacing=0,
+            ),
+            width=1000,
+        )
+
+        # Use Stack to overlay loading spinner on top of content
+        page.add(
+            ft.Stack(
+                [
+                    self.main_content,
+                    self.loading_overlay,
+                ],
+                expand=True,
             )
         )
 
